@@ -3,23 +3,24 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;             //Player's Rigidbody2D variable.
+    private BoxCollider2D coll;         //Player's BoxCollider2D variable.
     private SpriteRenderer sprite;      //Player's SpriteRenderer variable.
     private Animator anim;              //Player's Animator variable.
 
+    [SerializeField] private LayerMask jumpableGround;
     private enum MovementState { idle, running, jumping, falling }  //Enumeration for different movement states.
 
     [SerializeField] private float playerVelocity;      //Player's Jump Force, how high can the player jump.
     [SerializeField] private float playerSpeed;         //Player's Speed, how fast the player to run.
-    [SerializeField] private int playerGravity;         //Player's Gravity, how strong is the player being pulled down.
     [SerializeField] private float dirX;                //Player's directional X value..
 
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();               //Setting the Player's Rigidbody2D component equal to the Rigidbody2D variable.
-        anim = GetComponent<Animator>();                //Setting the Player's Rigidbody2D component equal to the Animator variable.
-        sprite = GetComponent<SpriteRenderer>();        //Setting the Player's Rigidbody2D component equal to the SpriteRenderer variable.
-        rb.gravityScale = playerGravity;                //Setting the Player's rigidbody gravity scale equal to the playerGravity Int variable.
+        coll = GetComponent<BoxCollider2D>();           //Setting the Player's BoxCollider2D component equal to the BoxCollider2D variable.
+        anim = GetComponent<Animator>();                //Setting the Player's Animator component equal to the Animator variable.
+        sprite = GetComponent<SpriteRenderer>();        //Setting the Player's SpriteRenderer component equal to the SpriteRenderer variable.
     }
 
     private void Update()
@@ -31,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
 
 
         //Jump
-        if (Input.GetButtonDown("Jump"))                                    //Checking if the Player is pressing the Space Bar.
+        if (Input.GetButtonDown("Jump") && IsGrounded())                                    //Checking if the Player is pressing the Space Bar.
         {
             rb.velocity = new Vector2(rb.velocity.x, playerVelocity);       //If Space is pressed, change the Player's Velocity.
         }
@@ -73,6 +74,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         anim.SetInteger("state", (int)state);   //Setting the "state" int condition and converting the Movement State enum into an int.
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .01f, jumpableGround);
     }
 
 }
