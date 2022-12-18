@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer sprite;      //Player's SpriteRenderer variable.
     private Animator anim;              //Player's Animator variable.
 
-    [SerializeField] private LayerMask jumpableGround;
+    [SerializeField] private LayerMask jumpableGround;              //Establishing a layer the player is allowed to jump on.
     private enum MovementState { idle, running, jumping, falling }  //Enumeration for different movement states.
 
     [SerializeField] private float playerVelocity;      //Player's Jump Force, how high can the player jump.
@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
 
 
         //Jump
-        if (Input.GetButtonDown("Jump") && IsGrounded())                                    //Checking if the Player is pressing the Space Bar.
+        if (Input.GetButtonDown("Jump") && IsGrounded())                    //Checking if the Player is pressing the Space Bar while on the ground.
         {
             rb.velocity = new Vector2(rb.velocity.x, playerVelocity);       //If Space is pressed, change the Player's Velocity.
         }
@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimations()
     {
-        MovementState state;
+        MovementState state;                    //Establishing a local MovementState variable.
 
         //Running animation
         if (dirX > 0f)                          //If the player is going right.
@@ -76,8 +76,9 @@ public class PlayerMovement : MonoBehaviour
         anim.SetInteger("state", (int)state);   //Setting the "state" int condition and converting the Movement State enum into an int.
     }
 
-    private bool IsGrounded()
+    private bool IsGrounded()                   //A boolean to check if the player is on the ground or not.
     {
+        //Finding the boxcast of the player and the terrain, if they overlap by .01, the player can jump on that terrain.
         return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .01f, jumpableGround);
     }
 
